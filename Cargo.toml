@@ -1,0 +1,6 @@
+# my-rust-monorepo/Cargo.toml
+[workspace]
+resolver = "3" 
+members = [
+    "crates/*" # This globs all directories inside the 'crates' folder as members
+]
