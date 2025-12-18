@@ -1,42 +1,72 @@
+use std::fmt::Display;
+
 fn main() {
-    // This is an example of a line comment.
-    // There are two slashes at the beginning of the line.
-    // And nothing written after these will be read by the compiler.
+    // In general, the `{}` will be automatically replaced with any
+    // arguments. These will be stringified.
+    println!("{} days", 31);
 
-    // println!("Hello, world!");
+    // Positional arguments can be used. Specifying an integer inside `{}`
+    // determines which additional argument will be replaced. Arguments start
+    // at 0 immediately after the format string.
+    println!("{0}, this is {1}. {1}, this is {0}", "Alice", "Bob");
 
-    // Run it. See? Now try deleting the two slashes, and run it again.
+    // As can named arguments.
+    println!(
+        "{subject} {verb} {object}",
+        object = "the lazy dog",
+        subject = "the quick brown fox",
+        verb = "jumps over"
+    );
 
-    /*
-     * This is another type of comment, a block comment. In general,
-     * line comments are the recommended comment style. But block comments
-     * are extremely useful for temporarily disabling chunks of code.
-     * /* Block comments can be /* nested, */ */ so it takes only a few
-     * keystrokes to comment out everything in this main() function.
-     * /*/*/* Try it yourself! */*/*/
-     */
+    // Different formatting can be invoked by specifying the format character
+    // after a `:`.
+    println!("Base 10:               {}", 69420); // 69420
+    println!("Base 2 (binary):       {:b}", 69420); // 10000111100101100
+    println!("Base 8 (octal):        {:o}", 69420); // 207454
+    println!("Base 16 (hexadecimal): {:x}", 69420); // 10f2c
 
-    /*
-    Note: The previous column of `*` was entirely for style. There's
-    no actual need for it.
-    */
+    // You can right-justify text with a specified width. This will
+    // output "    1". (Four white spaces and a "1", for a total width of 5.)
+    println!("{number:>5}", number = 1);
 
-    // Here's another powerful use of block comments: you can uncomment
-    // and comment a whole block by simply adding or removing a single
-    // '/' character:
+    // You can pad numbers with extra zeroes,
+    println!("{number:0>5}", number = 1); // 00001
+    // and left-adjust by flipping the sign. This will output "10000".
+    println!("{number:0<5}", number = 1); // 10000
 
-    /* <- add another '/' before the 1st one to uncomment the whole block
+    // You can use named arguments in the format specifier by appending a `$`.
+    println!("{number:0>width$}", number = 1, width = 5);
 
-    println!("Now");
-    println!("everything");
-    println!("executes!");
-    // line comments inside are not affected by either state
+    // Rust even checks to make sure the correct number of arguments are used.
+    println!("My name is {0}, {1} {0}", "Bond", "James");
+    // FIXME ^ Add the missing argument: "James"
 
-    // */
+    // Only types that implement fmt::Display can be formatted with `{}`. User-
+    // defined types do not implement fmt::Display by default.
 
-    // You can manipulate expressions more easily with block comments
-    // than with line comments. Try deleting the comment delimiters
-    // to change the result:
-    let x = 5 + /* 90 + */ 5;
-    println!("Is `x` 10 or 100? x = {}", x);
+    #[allow(dead_code)] // disable `dead_code` which warn against unused module
+    struct Structure(i32);
+
+    // This will not compile because `Structure` does not implement
+    // fmt::Display.
+    // println!("This struct `{}` won't print...", Structure(3));
+    // TODO ^ Try uncommenting this line
+
+    // For Rust 1.58 and above, you can directly capture the argument from a
+    // surrounding variable. Just like the above, this will output
+    // "    1", 4 white spaces and a "1".
+    let number: f64 = 1.0;
+    let width: usize = 5;
+    println!("{number:>width$}");
+
+    struct MinMax(i32, i32);
+
+    impl Display for MinMax {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "({}, {})", self.0, self.1)
+        }
+    }
+
+    let minmax = MinMax(0, 14);
+    println!("Compare structures: {}", minmax);
 }
